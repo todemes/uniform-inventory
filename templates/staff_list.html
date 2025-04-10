@@ -24,37 +24,31 @@
                     <div class="d-flex align-items-center" style="gap: 1rem;">
                         <a href="{{ url_for('assign_uniform') }}?staff_id={{ staff_member.id }}" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'">Assign Uniform</a>
                         <a href="{{ url_for('edit_staff', staff_id=staff_member.id) }}" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'">Edit</a>
-                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ staff_member.id }}">
-                            Delete
-                        </button>
+                        <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ staff_member.id }}">Delete</a>
                     </div>
                 </div>
                 <div class="card-body">
                     {% if staff_member.assigned_uniforms %}
                         <div class="table-responsive">
-                            <table class="table table-sm table-bordered">
+                            <table class="table table-sm" style="font-size: 0.9rem; margin-bottom: 0; border-collapse: collapse;">
                                 <thead>
                                     <tr>
                                         <th>Type</th>
                                         <th>Size</th>
                                         <th>Color</th>
                                         <th>Assigned Date</th>
-                                        <th>Notes</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for uniform in staff_member.assigned_uniforms %}
-                                    <tr>
-                                        <td>{{ uniform.type }}</td>
-                                        <td>{{ uniform.size }}</td>
-                                        <td>{{ uniform.color }}</td>
-                                        <td>{{ uniform.assigned_date.split(' ')[0] }}</td>
-                                        <td>{{ uniform.notes }}</td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#returnModal{{ staff_member.id }}_{{ loop.index }}">
-                                                Return
-                                            </button>
+                                    <tr style="border-bottom: 1px solid #dee2e6;">
+                                        <td style="padding: 0.2rem; border: none;">{{ uniform.type }}</td>
+                                        <td style="padding: 0.2rem; border: none;">{{ uniform.size }}</td>
+                                        <td style="padding: 0.2rem; border: none;">{{ uniform.color }}</td>
+                                        <td style="padding: 0.2rem; border: none;">{{ uniform.assigned_date.split(' ')[0] }}</td>
+                                        <td style="padding: 0.2rem; border: none;">
+                                            <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#returnModal{{ staff_member.id }}_{{ loop.index }}">Return</a>
                                         </td>
                                     </tr>
                                     
@@ -74,10 +68,6 @@
                                                             <li><strong>Size:</strong> {{ uniform.size }}</li>
                                                             <li><strong>Color:</strong> {{ uniform.color }}</li>
                                                         </ul>
-                                                        <div class="mb-3">
-                                                            <label for="notes" class="form-label">Notes</label>
-                                                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                                                        </div>
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" id="discard" name="discard" value="1">
                                                             <label class="form-check-label" for="discard">

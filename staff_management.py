@@ -101,7 +101,12 @@ class StaffManagement:
             FROM staff_assignments 
             WHERE id = ?
         ''', (assignment_id,))
-        staff_id, uniform_id = cursor.fetchone()
+        result = cursor.fetchone()
+        if result is None:
+            conn.close()
+            return "No matching record found."
+
+        staff_id, uniform_id = result
         
         # Update assignment status
         cursor.execute('''
