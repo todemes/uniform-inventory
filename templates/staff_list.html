@@ -68,11 +68,15 @@
                                                             <li><strong>Size:</strong> {{ uniform.size }}</li>
                                                             <li><strong>Color:</strong> {{ uniform.color }}</li>
                                                         </ul>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="discard" name="discard" value="1">
+                                                        <div class="form-check mb-3">
+                                                            <input class="form-check-input" type="checkbox" id="discard" name="discard" value="true">
                                                             <label class="form-check-label" for="discard">
                                                                 Discard (do not return to stock)
                                                             </label>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="notes" class="form-label">Notes</label>
+                                                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Enter any notes about this return..."></textarea>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">

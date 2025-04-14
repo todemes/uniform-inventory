@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
 from database import init_db
 from stock_management import StockManagement
 from staff_management import StaffManagement
+import csv
+from io import StringIO
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Required for flashing messages
@@ -116,6 +119,49 @@ def return_uniform(assignment_id):
 def history():
     movements = staff_mgmt.get_uniform_movement_history()
     return render_template('history.html', movements=movements)
+
+@app.route('/history/export')
+def export_history():
+    movements = staff_mgmt.get_uniform_movement_history()
+    
+    # Create a string buffer to write CSV data
+    si = StringIO()
+    cw = csv.writer(si)
+    
+    # Write headers
+    cw.writerow(['Date', 'Staff Member', 'Department', 'Uniform Type', 'Size', 'Color', 'Action', 'Notes'])
+    
+    # Write data
+    for movement in movements:
+        cw.writerow([
+            movement[0].split('.')[0],  # Date without milliseconds
+            movement[1],                # Staff Member
+            movement[2],                # Department
+            movement[3],                # Uniform Type
+            movement[4],                # Size
+            movement[5],                # Color
+            movement[6],                # Action
+            movement[7] or ''           # Notes
+        ])
+    
+    output = si.getvalue()
+    si.close()
+    
+    # Generate filename with current date
+    filename = f"uniform_history_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    return output, 200, {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': f'attachment; filename={filename}'
+    }
+
+@app.route('/history/delete', methods=['POST'])
+def delete_history_entries():
+    entry_ids = request.form.getlist('entry_ids[]')
+    if entry_ids:
+        staff_mgmt.delete_movement_history_entries(entry_ids)
+        flash('Selected entries have been deleted successfully.', 'success')
+    return redirect(url_for('history'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 

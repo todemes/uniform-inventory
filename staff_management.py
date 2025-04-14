@@ -108,12 +108,14 @@ class StaffManagement:
 
         staff_id, uniform_id = result
         
-        # Update assignment status
+        # Update assignment status and notes
         cursor.execute('''
             UPDATE staff_assignments 
-            SET status = ?, returned_date = CURRENT_TIMESTAMP
+            SET status = ?, 
+                returned_date = CURRENT_TIMESTAMP,
+                notes = ?
             WHERE id = ?
-        ''', ('returned' if not discard else 'discarded', assignment_id))
+        ''', ('returned' if not discard else 'discarded', notes, assignment_id))
         
         if not discard:
             # Update stock if not discarded
@@ -217,10 +219,12 @@ class StaffManagement:
         
         cursor.execute('''
             SELECT 
-                CASE 
-                    WHEN sa.returned_date IS NOT NULL THEN sa.returned_date
-                    ELSE sa.assigned_date
-                END as event_date,
+                date(
+                    CASE 
+                        WHEN sa.returned_date IS NOT NULL THEN sa.returned_date
+                        ELSE sa.assigned_date
+                    END
+                ) as event_date,
                 s.name as staff_name,
                 s.department,
                 u.type,
@@ -230,29 +234,27 @@ class StaffManagement:
                     WHEN sa.returned_date IS NOT NULL THEN 'Returned'
                     ELSE 'Assigned'
                 END as action,
-                sa.notes
+                sa.notes,
+                sa.id
             FROM staff_assignments sa
             JOIN staff s ON sa.staff_id = s.id
             JOIN uniforms u ON sa.uniform_id = u.id
-            
-            UNION ALL
-            
-            SELECT 
-                sm.date as event_date,
-                'Stock Update' as staff_name,
-                '' as department,
-                u.type,
-                u.size,
-                u.color,
-                sm.movement_type as action,
-                sm.notes
-            FROM stock_movements sm
-            JOIN uniforms u ON sm.uniform_id = u.id
-            WHERE sm.movement_type NOT IN ('assignment', 'return')
-            
             ORDER BY event_date DESC
         ''')
         
         results = cursor.fetchall()
         conn.close()
-        return results 
+        return results
+
+    def delete_movement_history_entries(self, entry_ids):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Delete selected entries from staff_assignments
+        cursor.execute('''
+            DELETE FROM staff_assignments
+            WHERE id IN ({})
+        '''.format(','.join('?' * len(entry_ids))), entry_ids)
+        
+        conn.commit()
+        conn.close() 
