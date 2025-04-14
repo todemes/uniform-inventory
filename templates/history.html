@@ -17,6 +17,7 @@
                             <th>Size</th>
                             <th>Color</th>
                             <th>Action</th>
+                            <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,10 +30,11 @@
                             <td>{{ movement[4] }}</td>
                             <td>{{ movement[5] }}</td>
                             <td>
-                                <span class="badge {% if movement[6] == 'Returned' %}bg-success{% else %}bg-primary{% endif %}">
+                                <span class="badge {% if movement[6] == 'Returned' %}bg-success{% elif movement[6] == 'Assigned' %}bg-primary{% else %}bg-warning{% endif %}">
                                     {{ movement[6] }}
                                 </span>
                             </td>
+                            <td>{{ movement[7] or '' }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -41,19 +43,4 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DataTable for better sorting and filtering
-    const table = document.querySelector('table');
-    new DataTable(table, {
-        order: [[0, 'desc']], // Sort by date descending by default
-        pageLength: 25, // Show 25 entries per page
-        dom: 'Bfrtip', // Add export buttons
-        buttons: [
-            'csv', 'excel', 'pdf'
-        ]
-    });
-});
-</script>
 {% endblock %} 

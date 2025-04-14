@@ -60,7 +60,7 @@
                                                     <h5 class="modal-title" id="returnModalLabel{{ staff_member.id }}_{{ loop.index }}">Return Uniform</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <form action="{{ url_for('return_uniform', assignment_id=staff_member.id) }}" method="POST">
+                                                <form action="{{ url_for('return_uniform', assignment_id=uniform.assignment_id) }}" method="POST">
                                                     <div class="modal-body">
                                                         <p>Are you sure you want to return the following uniform?</p>
                                                         <ul>
