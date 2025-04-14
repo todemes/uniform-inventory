@@ -181,7 +181,7 @@ class StaffManagement:
             
             # Get assigned uniforms for this staff member
             cursor.execute('''
-                SELECT u.type, u.size, u.color, sa.assigned_date, sa.status
+                SELECT sa.id, u.type, u.size, u.color, sa.assigned_date, sa.status
                 FROM staff_assignments sa
                 JOIN uniforms u ON sa.uniform_id = u.id
                 WHERE sa.staff_id = ? AND sa.status = 'assigned'
@@ -193,11 +193,12 @@ class StaffManagement:
             assigned_uniforms = []
             for uniform in uniforms:
                 assigned_uniforms.append({
-                    'type': uniform[0],
-                    'size': uniform[1],
-                    'color': uniform[2],
-                    'assigned_date': uniform[3],
-                    'status': uniform[4]
+                    'assignment_id': uniform[0],
+                    'type': uniform[1],
+                    'size': uniform[2],
+                    'color': uniform[3],
+                    'assigned_date': uniform[4],
+                    'status': uniform[5]
                 })
             
             staff_list.append({
@@ -208,4 +209,50 @@ class StaffManagement:
             })
         
         conn.close()
-        return staff_list 
+        return staff_list
+
+    def get_uniform_movement_history(self):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT 
+                CASE 
+                    WHEN sa.returned_date IS NOT NULL THEN sa.returned_date
+                    ELSE sa.assigned_date
+                END as event_date,
+                s.name as staff_name,
+                s.department,
+                u.type,
+                u.size,
+                u.color,
+                CASE 
+                    WHEN sa.returned_date IS NOT NULL THEN 'Returned'
+                    ELSE 'Assigned'
+                END as action,
+                sa.notes
+            FROM staff_assignments sa
+            JOIN staff s ON sa.staff_id = s.id
+            JOIN uniforms u ON sa.uniform_id = u.id
+            
+            UNION ALL
+            
+            SELECT 
+                sm.date as event_date,
+                'Stock Update' as staff_name,
+                '' as department,
+                u.type,
+                u.size,
+                u.color,
+                sm.movement_type as action,
+                sm.notes
+            FROM stock_movements sm
+            JOIN uniforms u ON sm.uniform_id = u.id
+            WHERE sm.movement_type NOT IN ('assignment', 'return')
+            
+            ORDER BY event_date DESC
+        ''')
+        
+        results = cursor.fetchall()
+        conn.close()
+        return results 

@@ -112,5 +112,10 @@ def return_uniform(assignment_id):
     flash('Uniform returned successfully!', 'success')
     return redirect(url_for('staff_list'))
 
+@app.route('/history')
+def history():
+    movements = staff_mgmt.get_uniform_movement_history()
+    return render_template('history.html', movements=movements)
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 
