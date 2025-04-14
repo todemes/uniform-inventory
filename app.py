@@ -5,14 +5,32 @@ from staff_management import StaffManagement
 import csv
 from io import StringIO
 import datetime
+import os
+from dotenv import load_dotenv
+import logging
+
+# Load environment variables
+load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Required for flashing messages
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'fallback-secret-key')
 
-# Initialize database
-init_db()
-stock_mgmt = StockManagement()
-staff_mgmt = StaffManagement()
+# Initialize database with error handling
+try:
+    init_db()
+    stock_mgmt = StockManagement()
+    staff_mgmt = StaffManagement()
+    logger.info("Database and management systems initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize database: {str(e)}")
+    raise
 
 @app.route('/')
 def index():

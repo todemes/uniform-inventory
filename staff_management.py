@@ -219,12 +219,8 @@ class StaffManagement:
         
         cursor.execute('''
             SELECT 
-                date(
-                    CASE 
-                        WHEN sa.returned_date IS NOT NULL THEN sa.returned_date
-                        ELSE sa.assigned_date
-                    END
-                ) as event_date,
+                date(sa.assigned_date) as assigned_date,
+                date(sa.returned_date) as returned_date,
                 s.name as staff_name,
                 s.department,
                 u.type,
@@ -239,7 +235,7 @@ class StaffManagement:
             FROM staff_assignments sa
             JOIN staff s ON sa.staff_id = s.id
             JOIN uniforms u ON sa.uniform_id = u.id
-            ORDER BY event_date DESC
+            ORDER BY sa.assigned_date DESC
         ''')
         
         results = cursor.fetchall()

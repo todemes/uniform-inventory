@@ -1,8 +1,8 @@
 import sqlite3
 
 staff_list = [
-    ("Romesh", "BARTENDER"),
-    ("Shahadat", "BARTENDER"),
+    ("Romesh", "Bartender"),
+    ("Shahadat", "Bartender"),
     ("Alibe", "CAPTAIN"),
     ("Anton", "CHEF"),
     ("Hashan", "CHEF"),
