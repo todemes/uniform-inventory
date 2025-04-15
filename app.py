@@ -8,6 +8,7 @@ import datetime
 import os
 from dotenv import load_dotenv
 import logging
+import io
 
 # Load environment variables
 load_dotenv()
@@ -34,36 +35,63 @@ except Exception as e:
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('stock_list'))
 
 @app.route('/stock')
 def stock_list():
     uniforms = stock_mgmt.get_uniform_list()
     return render_template('stock_list.html', uniforms=uniforms)
 
-@app.route('/stock/add', methods=['GET', 'POST'])
+@app.route('/add_uniform', methods=['POST'])
 def add_uniform():
-    if request.method == 'POST':
-        type = request.form['type']
-        size = request.form['size']
-        color = request.form['color']
-        initial_stock = int(request.form['initial_stock'])
-        reorder_level = int(request.form['reorder_level'])
-        
-        stock_mgmt.add_uniform_type(type, size, color, initial_stock)
-        flash('Uniform added successfully!', 'success')
-        return redirect(url_for('stock_list'))
+    type = request.form.get('type')
+    size = request.form.get('size')
+    color = request.form.get('color')
+    initial_stock = int(request.form.get('initial_stock', 0))
     
-    return render_template('add_uniform.html')
+    # Check if uniform already exists
+    existing_uniform = stock_mgmt.get_uniform_by_details(type, size, color)
+    if existing_uniform:
+        # Update existing uniform's stock
+        stock_mgmt.update_stock(existing_uniform['id'], initial_stock, 'addition', 'Initial stock addition')
+        flash(f'Updated stock for existing uniform: {type} ({size}, {color})', 'success')
+    else:
+        # Add new uniform
+        stock_mgmt.add_uniform_type(type, size, color, initial_stock)
+        flash(f'Added new uniform: {type} ({size}, {color})', 'success')
+    
+    return redirect(url_for('stock_list'))
 
 @app.route('/stock/update/<int:uniform_id>', methods=['POST'])
 def update_stock(uniform_id):
-    quantity = int(request.form['quantity'])
-    movement_type = request.form['movement_type']
-    notes = request.form.get('notes', '')
-    
-    stock_mgmt.update_stock(uniform_id, quantity, movement_type, notes)
-    flash('Stock updated successfully!', 'success')
+    try:
+        quantity = int(request.form.get('quantity', 0))
+        if quantity < 0:
+            flash('Stock level cannot be negative', 'error')
+            return redirect(url_for('stock_list'))
+            
+        stock_mgmt = StockManagement()
+        result = stock_mgmt.update_stock(uniform_id, quantity)
+        
+        if result:
+            flash('Stock updated successfully', 'success')
+        else:
+            flash('Failed to update stock', 'error')
+            
+    except ValueError:
+        flash('Invalid quantity value', 'error')
+    except Exception as e:
+        flash(f'Error updating stock: {str(e)}', 'error')
+        
+    return redirect(url_for('stock_list'))
+
+@app.route('/stock/delete/<int:uniform_id>', methods=['POST'])
+def delete_uniform(uniform_id):
+    success, message = stock_mgmt.delete_uniform(uniform_id)
+    if success:
+        flash(message, 'success')
+    else:
+        flash(message, 'error')
     return redirect(url_for('stock_list'))
 
 @app.route('/staff')
@@ -180,6 +208,78 @@ def delete_history_entries():
         staff_mgmt.delete_movement_history_entries(entry_ids)
         flash('Selected entries have been deleted successfully.', 'success')
     return redirect(url_for('history'))
+
+@app.route('/export_stock_csv')
+def export_stock_csv():
+    # Get all uniforms with positive stock
+    uniforms = stock_mgmt.get_uniform_list()
+    uniforms = [u for u in uniforms if u['current_stock'] > 0]
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(['Type', 'Size', 'Color', 'Current Stock'])
+    
+    # Write data
+    for uniform in uniforms:
+        writer.writerow([
+            uniform['type'],
+            uniform['size'],
+            uniform['color'],
+            uniform['current_stock']
+        ])
+    
+    # Prepare the output
+    output.seek(0)
+    
+    # Create response
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='uniform_stock.csv'
+    )
+
+@app.route('/export_staff_csv')
+def export_staff_csv():
+    # Get all staff members
+    staff = staff_mgmt.get_staff_list()
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(['Name', 'Department', 'Assigned Uniforms'])
+    
+    # Write data
+    for member in staff:
+        # Get assigned uniforms for this staff member
+        assignments = staff_mgmt.get_staff_assignments(member['id'])
+        assigned_uniforms = []
+        for assignment in assignments:
+            # assignment is a tuple: (id, name, department, type, size, color, assigned_date, returned_date, status, notes)
+            if assignment[8] == 'assigned':  # status is at index 8
+                assigned_uniforms.append(f"{assignment[3]} ({assignment[4]}, {assignment[5]})")
+        
+        writer.writerow([
+            member['name'],
+            member['department'],
+            '; '.join(assigned_uniforms) if assigned_uniforms else 'None'
+        ])
+    
+    # Prepare the output
+    output.seek(0)
+    
+    # Create response
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='staff_list.csv'
+    )
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080) 

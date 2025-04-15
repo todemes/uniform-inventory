@@ -15,25 +15,29 @@ class StockManagement:
         conn.commit()
         conn.close()
 
-    def update_stock(self, uniform_id, quantity_change, movement_type, notes=""):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Update current stock
-        cursor.execute('''
-            UPDATE uniforms 
-            SET current_stock = current_stock + ?
-            WHERE id = ?
-        ''', (quantity_change, uniform_id))
-        
-        # Record the movement
-        cursor.execute('''
-            INSERT INTO stock_movements (uniform_id, movement_type, quantity, notes)
-            VALUES (?, ?, ?, ?)
-        ''', (uniform_id, movement_type, quantity_change, notes))
-        
-        conn.commit()
-        conn.close()
+    def update_stock(self, uniform_id, new_stock):
+        """Update the stock level for a uniform."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Update the stock level
+            cursor.execute("""
+                UPDATE uniforms 
+                SET current_stock = ?
+                WHERE id = ?
+            """, (new_stock, uniform_id))
+            
+            conn.commit()
+            return True
+            
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return False
+            
+        finally:
+            if conn:
+                conn.close()
 
     def get_current_stock(self, uniform_id=None):
         conn = sqlite3.connect(self.db_path)
@@ -112,4 +116,53 @@ class StockManagement:
         return movements
 
     def get_uniform_list(self):
-        return self.get_current_stock() 
+        return self.get_current_stock()
+
+    def delete_uniform(self, uniform_id):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            # First check if the uniform is assigned to any staff
+            cursor.execute('''
+                SELECT COUNT(*) FROM staff_assignments 
+                WHERE uniform_id = ? AND returned_date IS NULL
+            ''', (uniform_id,))
+            assigned_count = cursor.fetchone()[0]
+            
+            if assigned_count > 0:
+                return False, "Cannot delete uniform that is currently assigned to staff"
+            
+            # Delete the uniform
+            cursor.execute('DELETE FROM uniforms WHERE id = ?', (uniform_id,))
+            conn.commit()
+            return True, "Uniform deleted successfully"
+            
+        except Exception as e:
+            return False, f"Error deleting uniform: {str(e)}"
+        finally:
+            conn.close()
+
+    def get_uniform_by_details(self, type, size, color):
+        """Get a uniform by its type, size, and color."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT id, type, size, color, current_stock
+            FROM uniforms
+            WHERE type = ? AND size = ? AND color = ?
+        ''', (type, size, color))
+        
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            return {
+                'id': row[0],
+                'type': row[1],
+                'size': row[2],
+                'color': row[3],
+                'stock': row[4]
+            }
+        return None 

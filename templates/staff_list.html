@@ -2,10 +2,15 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Staff Members</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Staff List</h1>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('add_staff') }}" class="btn btn-primary">Add Staff</a>
+            <a href="{{ url_for('export_staff_csv') }}" class="btn btn-success">Export to CSV</a>
+        </div>
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <input type="text" id="staffSearch" class="form-control" placeholder="Search Staff..." onfocus="clearAndShowDropdown()" onblur="hideDropdown()" onkeyup="filterStaff()" style="max-width: 300px;">
-        <a href="{{ url_for('add_staff') }}" class="btn btn-primary ms-2">Add New Staff Member</a>
     </div>
     
     <ul id="staffList" class="list-group mt-2 mb-3" style="max-height: 200px; overflow-y: auto; display: none; width: 300px;">
