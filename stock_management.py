@@ -119,27 +119,34 @@ class StockManagement:
         return self.get_current_stock()
 
     def delete_uniform(self, uniform_id):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
+        """Delete a uniform from the database"""
         try:
-            # First check if the uniform is assigned to any staff
-            cursor.execute('''
-                SELECT COUNT(*) FROM staff_assignments 
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # First check if the uniform exists
+            cursor.execute("SELECT id FROM uniforms WHERE id = ?", (uniform_id,))
+            if not cursor.fetchone():
+                return "Error: Uniform not found"
+            
+            # Check if the uniform is currently assigned to any staff
+            cursor.execute("""
+                SELECT staff_id 
+                FROM staff_assignments 
                 WHERE uniform_id = ? AND returned_date IS NULL
-            ''', (uniform_id,))
-            assigned_count = cursor.fetchone()[0]
+            """, (uniform_id,))
+            assignment = cursor.fetchone()
             
-            if assigned_count > 0:
-                return False, "Cannot delete uniform that is currently assigned to staff"
+            if assignment:
+                return "Error: Cannot delete uniform that is currently assigned"
             
-            # Delete the uniform
-            cursor.execute('DELETE FROM uniforms WHERE id = ?', (uniform_id,))
+            # If not assigned, proceed with deletion
+            cursor.execute("DELETE FROM uniforms WHERE id = ?", (uniform_id,))
             conn.commit()
-            return True, "Uniform deleted successfully"
+            return "Uniform deleted successfully"
             
-        except Exception as e:
-            return False, f"Error deleting uniform: {str(e)}"
+        except sqlite3.Error as e:
+            return f"Error deleting uniform: {str(e)}"
         finally:
             conn.close()
 

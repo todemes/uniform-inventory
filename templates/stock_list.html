@@ -1,6 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .alert {
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+
 <div class="container mt-4">
     <h2>Uniform Stock</h2>
     <div class="d-flex gap-2 mb-3">
@@ -97,8 +116,12 @@
                                 <td>{{ uniform.current_stock }}</td>
                                 <td>
                                     <div class="d-flex align-items-center" style="gap: 1rem;">
-                                        <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                        <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                        <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                            <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                        </a>
+                                        <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                            <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -200,8 +223,12 @@
                                             <td>{{ uniform.current_stock }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                    </a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                        <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -222,7 +249,7 @@
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementStock(this)">-</button>
                                                                     <input type="number" class="form-control text-center" id="quantity" name="quantity" value="{{ uniform.current_stock }}" required min="0" inputmode="numeric">
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementStock(this)">+</button>
-                                                                </div>
+                                                            </div>
                                                                 <small class="text-muted">Click +/- or enter the new total stock level</small>
                                                             </div>
                                                         </div>
@@ -305,8 +332,12 @@
                                             <td>{{ uniform.current_stock }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                    </a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                        <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -327,7 +358,7 @@
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementStock(this)">-</button>
                                                                     <input type="number" class="form-control text-center" id="quantity" name="quantity" value="{{ uniform.current_stock }}" required min="0" inputmode="numeric">
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementStock(this)">+</button>
-                                                                </div>
+                                                            </div>
                                                                 <small class="text-muted">Click +/- or enter the new total stock level</small>
                                                             </div>
                                                         </div>
@@ -410,8 +441,12 @@
                                             <td>{{ uniform.current_stock }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                    </a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                        <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -432,7 +467,7 @@
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementStock(this)">-</button>
                                                                     <input type="number" class="form-control text-center" id="quantity" name="quantity" value="{{ uniform.current_stock }}" required min="0" inputmode="numeric">
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementStock(this)">+</button>
-                                                                </div>
+                                                            </div>
                                                                 <small class="text-muted">Click +/- or enter the new total stock level</small>
                                                             </div>
                                                         </div>
@@ -513,8 +548,12 @@
                                         <td>{{ uniform.current_stock }}</td>
                                         <td>
                                             <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                    <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                </a>
+                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                    <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
@@ -617,8 +656,12 @@
                                             <td>{{ uniform.current_stock }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                    </a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                        <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -639,7 +682,7 @@
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementStock(this)">-</button>
                                                                     <input type="number" class="form-control text-center" id="quantity" name="quantity" value="{{ uniform.current_stock }}" required min="0" inputmode="numeric">
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementStock(this)">+</button>
-                                                                </div>
+                                                            </div>
                                                                 <small class="text-muted">Click +/- or enter the new total stock level</small>
                                                             </div>
                                                         </div>
@@ -722,8 +765,12 @@
                                             <td>{{ uniform.current_stock }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                        <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                    </a>
+                                                    <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                        <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -744,7 +791,7 @@
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="decrementStock(this)">-</button>
                                                                     <input type="number" class="form-control text-center" id="quantity" name="quantity" value="{{ uniform.current_stock }}" required min="0" inputmode="numeric">
                                                                     <button type="button" class="btn btn-outline-secondary" onclick="incrementStock(this)">+</button>
-                                                                </div>
+                                                            </div>
                                                                 <small class="text-muted">Click +/- or enter the new total stock level</small>
                                                             </div>
                                                         </div>
@@ -825,8 +872,12 @@
                                         <td>{{ uniform.current_stock }}</td>
                                         <td>
                                             <div class="d-flex align-items-center" style="gap: 1rem;">
-                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}">Update Stock</a>
-                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}">Delete</a>
+                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='black'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#updateModal{{ uniform.id }}" title="Update Stock">
+                                                    <i class="bi bi-arrow-repeat" style="font-size: 1.2rem;"></i>
+                                                </a>
+                                                <a href="#" class="text-decoration-none" style="color: #bcab82;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#bcab82'" data-bs-toggle="modal" data-bs-target="#deleteModal{{ uniform.id }}" title="Delete">
+                                                    <i class="bi bi-trash" style="font-size: 1.2rem;"></i>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

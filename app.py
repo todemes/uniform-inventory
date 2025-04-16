@@ -67,7 +67,7 @@ def update_stock(uniform_id):
     try:
         quantity = int(request.form.get('quantity', 0))
         if quantity < 0:
-            flash('Stock level cannot be negative', 'error')
+            flash('Stock level cannot be negative', 'danger')
             return redirect(url_for('stock_list'))
             
         stock_mgmt = StockManagement()
@@ -76,22 +76,22 @@ def update_stock(uniform_id):
         if result:
             flash('Stock updated successfully', 'success')
         else:
-            flash('Failed to update stock', 'error')
+            flash('Failed to update stock', 'danger')
             
     except ValueError:
-        flash('Invalid quantity value', 'error')
+        flash('Invalid quantity value', 'danger')
     except Exception as e:
-        flash(f'Error updating stock: {str(e)}', 'error')
+        flash(f'Error updating stock: {str(e)}', 'danger')
         
     return redirect(url_for('stock_list'))
 
 @app.route('/stock/delete/<int:uniform_id>', methods=['POST'])
 def delete_uniform(uniform_id):
-    success, message = stock_mgmt.delete_uniform(uniform_id)
-    if success:
-        flash(message, 'success')
+    result = stock_mgmt.delete_uniform(uniform_id)
+    if "error" in result.lower():
+        flash(result, 'danger')
     else:
-        flash(message, 'error')
+        flash(result, 'success')
     return redirect(url_for('stock_list'))
 
 @app.route('/staff')
@@ -123,7 +123,7 @@ def edit_staff(staff_id):
     
     staff = staff_mgmt.get_staff_by_id(staff_id)
     if staff is None:
-        flash('Staff member not found!', 'error')
+        flash('Staff member not found!', 'danger')
         return redirect(url_for('staff_list'))
     
     return render_template('edit_staff.html', staff=staff)
@@ -134,7 +134,7 @@ def delete_staff(staff_id):
     if success:
         flash(message, 'success')
     else:
-        flash(message, 'error')
+        flash(message, 'danger')
     return redirect(url_for('staff_list'))
 
 @app.route('/staff/assign', methods=['GET', 'POST'])
